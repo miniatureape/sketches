@@ -1,65 +1,46 @@
+import processing.pdf.*;
 import java.util.ArrayList;
 
-int width = 800;
-int height = 600;
-float period = (float) width * .50;
-float amp = 30;
-float vertPadding = (amp * 2) * .3;
+int width = 200;
+int height = 20000;
+float period = 100;
+float amp = 10;
 
 int bgColor = color(252,247,211);
 int strokeColor = color(222,232,190);
 
-int[][][] freqList;
-
 void setup() {
-  size(width, height);
+  size(width, height, PDF, "sinewaves.pdf");
   smooth();
   
   background(bgColor);
   stroke(strokeColor);
   strokeWeight(1);
   
-  freqList = createWaves();
+  createWaves(makeWaveData());
   
+  println("Done");
+  exit();
+}
+
+void createWaves(int[][][] waveData) {
   float yOff = amp * 2;
   
-  for (int i = 0; i < freqList.length; i++) {
-    yOff = yOff + (i * (amp * 2) + vertPadding);
-       
-    for (int j = 0; j < freqList[i].length; j++ ) {
+  for (int i = 0; i < waveData.length; i++) {
+   
+    for (int j = 0; j < waveData[i].length; j++ ) {
       ComplexWave cWave = new ComplexWave();
       
-      for (int k = 0; k < freqList[i][j].length; k++ ) {
-        Wave wave = new Wave(freqList[i][j][k], amp, period);
+      for (int k = 0; k < waveData[i][j].length; k++ ) {
+        Wave wave = new Wave(waveData[i][j][k], amp, period);
         cWave.add(wave);
       }
+      
       cWave.draw(center(width, period), yOff);      
     }
+    
+    yOff += 50;
   }
-  
-  
-}
-
-int[][][] createWaves() {
-  int[][][] freqList = {
-    {
-      {2},
-      {1,3},
-    },
-    {
-      {1},
-      {1,7,9},
-    },
-    {
-      {3},
-      {5,4},
-    },
-  };
-  return freqList;
-}
-
-float center(float outerWidth, float width) {
-  return (outerWidth - width) / 2;
 }
 
 class ComplexWave {
@@ -86,7 +67,6 @@ class ComplexWave {
 
     for (float x = 0; x < period; x++) {
       float percent = (x / period);
-      
       float wy = 0;
       
       for (int i = 0; i < this.components.size(); i++) {
@@ -102,7 +82,6 @@ class ComplexWave {
       prevy = y;
     }
   }
-  
 }
 
 class Wave {
@@ -139,3 +118,43 @@ class Wave {
   }
   
 }
+
+float center(float outerWidth, float width) {
+  return (outerWidth - width) / 2;
+}
+
+int[][][] makeWaveData() {
+  int[][][] waveData = new int[100][1][100];
+  for (int i = 1; i < 100; i++) {
+    for (int j = 1; j < i; j++) {
+      waveData[i][0][j] = j;
+    }
+  }
+  return waveData;
+}
+
+/*
+int[][][] waveData = {
+  {
+    {1},
+  },
+  {
+    {1,2},
+  },
+  {
+    {1,2,3},
+  },
+  {
+    {1,2,3,4},
+  },
+  {
+    {1,2,3,4,5},
+  },
+  {
+    {1,2,3,4,5,6},
+  },
+  {
+    {1,2,3,4,5,7},
+  },
+};
+*/
